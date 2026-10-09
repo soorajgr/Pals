@@ -14,6 +14,9 @@ let state = {
 // Prevent an asynchronous file read from restoring data after Clear.
 let importVersion = 0;
 
+// Same idea for an in-flight local-server analysis.
+let analysisVersion = 0;
+
 function deadlineLabel(deadline) {
   if (!deadline) {
     return "Not specified";
@@ -163,6 +166,7 @@ $("transcript").append(fragment);
 }
 
 function invalidateResults() {
+  analysisVersion += 1;
   state = { messages: [], items: [], skipped: 0 };
 
 $("results").hidden = true;
@@ -172,7 +176,36 @@ $("results").hidden = true;
   $("summary").textContent = "";
 }
 
-function analyzeInput() {
+/*
+ * Optional: send the text to the local server (same origin only).
+ * Throws on any failure so the caller can fall back to in-page analysis.
+ */
+async function analyzeWithServer(text, options, lastRead) {
+  const response = await fetch("/api/analyze", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      text,
+      username: options.username,
+      referenceDate: options.referenceDate,
+      lastRead
+    })
+  });
+
+if (!response.ok) {
+    throw new Error("Server refused the request.");
+  }
+
+const data = await response.json();
+
+if (!Array.isArray(data.items)) {
+    throw new Error("Unexpected server response.");
+  }
+
+return data.items;
+}
+
+async function analyzeInput() {
   const input = $("conversation").value;
   const referenceDate = $("reference-date").value;
 
@@ -205,19 +238,40 @@ if (!lastRead.ok) {
     return;
   }
 
-const items = analyzeUnread(
-    messages,
-    { username: $("username").value, referenceDate },
-    lastRead.value
-  );
+const options = { username: $("username").value, referenceDate };
+  const version = ++analysisVersion;
+  let items;
+  let usedServer = false;
+  let fellBack = false;
+
+if ($("use-server").checked) {
+    $("status").textContent = "Asking the local server...";
+
+    try {
+      items = await analyzeWithServer(input, options, $("last-read").value);
+      usedServer = true;
+    } catch {
+      fellBack = true;
+    }
+
+    if (version !== analysisVersion) {
+      return; // Cleared or edited while waiting.
+    }
+  }
+
+if (!items) {
+    items = analyzeUnread(messages, options, lastRead.value);
+  }
 
 state = { messages, items, skipped: lastRead.value };
 
 renderResults();
 
 $("status").textContent =
-    `Analyzed ${messages.length - lastRead.value} unread message(s) locally ` +
-    `(${lastRead.value} skipped as already read). Nothing was uploaded.`;
+    `Analyzed ${messages.length - lastRead.value} unread message(s) ` +
+    (usedServer ? "on your local server" : "locally") +
+    ` (${lastRead.value} skipped as already read). Nothing left your computer.` +
+    (fellBack ? " The local server was not reachable, so the page analyzed it itself." : "");
 }
 
 function clearEverything() {
@@ -231,6 +285,13 @@ $("conversation").value = "";
   $("priority").value = "all";
 
 resetReferenceDate();
+
+if (location.protocol === "file:") {
+  $("use-server").disabled = true;
+  $("server-help").textContent =
+    "Unavailable when opened as a file. Run node server.js and open " +
+    "http://127.0.0.1:3000 to use it.";
+}
   invalidateResults();
 
 $("status").textContent = "Conversation and results cleared from app state.";
@@ -333,3 +394,10 @@ analyzeInput();
 });
 
 resetReferenceDate();
+
+if (location.protocol === "file:") {
+  $("use-server").disabled = true;
+  $("server-help").textContent =
+    "Unavailable when opened as a file. Run node server.js and open " +
+    "http://127.0.0.1:3000 to use it.";
+}

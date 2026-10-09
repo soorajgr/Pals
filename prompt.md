@@ -2,7 +2,7 @@
 
 **Project:** What Did I Miss? (ProtocolX challenge: "The Unread Problem")
 **Event date:** 9 October 2026
-**Repo:** https://github.com/soorajgr/What_Did_I_Miss
+**Repo:** https://github.com/soorajgr/Pals
 **AI tools used:** Claude (planning, code review, debugging, refactoring help); [FILL IN: tool used for the build prompt, e.g. Claude / ChatGPT / Gemini]
 
 > Honesty note: this log lists only interactions that actually happened.
@@ -34,7 +34,7 @@
   - Filters by category and priority
   - Source message list with links from each item back to its message
   - Fictional demo data, a "Clear everything" button, local .txt import
-  - Built-in edge-case test panel (5 core tests + 1 for the last-read feature)
+  - Built-in edge-case test panel (5 core tests + 2 for the last-read and WhatsApp features = 7)
   - Privacy: no backend, no network requests, no storage
 
 ## 2. Tech Stack & Architecture
@@ -195,12 +195,52 @@
   to 5/5, and the demo then showed 1 decision. I then ran the built-in tests
   in my own browser and all 5 passed. [FILL IN: browser name]
 
-Entry 6 : WhatsApp export support
-Prompt: After Claude gave a harsh critique of my score, one weakness was that real chats don't match my input format. I replied "yes" to Claude's offer to build a WhatsApp export parser.
-Tool/model: Claude
-Purpose: Let users paste or import a real WhatsApp text export (Android and iPhone) instead of only my custom format.
-Files affected: parser.js, extract.js, ui.js, tests.js, index.html, README.md, whatsapp-sample.txt
-Outcome/verification: In Claude's simulated browser (jsdom) all 7 test groups passed. Claude also ran a messy sample (system lines, multi-line messages, media lines, emoji, an Android and an iPhone variant, 24-hour time). Removing the WhatsApp detection made test 7 fail, so the test does check the feature. [Confirmed in my own browser: YES/NO. Tested with a real export from my own chat: YES/NO]
+### Entry 6: WhatsApp export support
+- **Prompt:** After Claude gave a harsh critique of my score, one weakness was
+  that real chats don't match my input format. I replied "yes" to Claude's
+  offer to build a WhatsApp export parser.
+- **Tool/model:** Claude
+- **Purpose:** Let users paste or import a real WhatsApp text export (Android
+  and iPhone) instead of only my custom format.
+- **Files affected:** `parser.js`, `extract.js`, `ui.js`, `tests.js`,
+  `index.html`, `README.md`, `whatsapp-sample.txt`
+- **Outcome/verification:** In Claude's simulated browser (jsdom) all 7 test
+  groups passed. Claude also ran a messy sample (system lines, multi-line
+  messages, media lines, emoji, Android and iPhone variants, 24-hour time).
+  Removing the WhatsApp detection made test 7 fail, so the test does check the
+  feature. Confirmed in my own browser: [FILL IN: yes/no]. Tested with a real
+  export from my own chat: [FILL IN: yes/no].
+
+### Entry 7: Round 2 result, deadline fix and optional local backend
+- **Prompt:** After my second result (84.90/100, rank #10 of 20; Backend &
+  Architecture still 60), I asked Claude what to do next. Claude proposed
+  fixing small issues first, then an optional local backend that keeps the
+  app working standalone. I replied "go".
+- **Tool/model:** Claude
+- **Purpose:** Fix a deadline bug and add real server-side structure without
+  breaking local-first behavior.
+- **Files affected:** `extract.js` (deadline fix), `tests.js`, `index.html`
+  (CSP `connect-src 'self'`, optional "Use local server" switch), `ui.js`,
+  `styles.css`; new `core.js`, `server.js`, `cli.js`, `package.json`,
+  `test/core.test.js`, `test/server.test.js`; `README.md`, `prompt.md`
+- **Bug fixed:** `by 2026-10-12, will share in the group` was treated as
+  needing clarification because an ISO date only normalized when it was the
+  whole phrase. Now it normalizes when only plain words follow a comma;
+  `2026-10-12, 5pm` stays unresolved. Both cases are tested.
+- **Design:** `core.js` loads the same `utils/parser/extract/score` scripts the
+  page uses, so there is one copy of the logic for the browser, server and CLI.
+  `server.js` binds to 127.0.0.1, allow-lists static files, limits request
+  size, sets security headers, rejects foreign Host headers and never logs or
+  stores chat text.
+- **Bug found by testing:** the first version of the server destroyed the
+  connection when a request was too large, so the client got a connection
+  reset instead of a 413 response. Fixed by draining the body and replying 413.
+- **Outcome/verification:** `npm test` runs 9 core tests and 7 server checks (17 TAP results),
+  repeated 3 times, all passing. In a simulated browser (not a real
+  one) the 7 in-page tests passed; analysis matched in page and server modes;
+  the page fell back to local analysis when the server was down; Clear during
+  a request was not undone. Confirmed in my own real browser: [FILL IN:
+  yes/no, browser name].
 
 ## 5. AI Features & Design
 
@@ -221,7 +261,7 @@ Outcome/verification: In Claude's simulated browser (jsdom) all 7 test groups pa
 
 ## 6. Testing & Improvements
 
-**Built-in edge-case tests** (button: "Run edge-case tests (5 core + 1)"):
+**Built-in edge-case tests** (button: "Run edge-case tests (5 core + 2)"):
 
 1. Proposal vs. decision and negation
 2. Explicit sarcasm (`/s`)
@@ -231,7 +271,11 @@ Outcome/verification: In Claude's simulated browser (jsdom) all 7 test groups pa
 6. Last-read marker: only messages after the last-read point are analyzed;
    empty means 0; negative, non-numeric and too-large values are rejected;
    nothing remains when every message is read
-7. WhatsApp export formats. Now 5 core edge cases + 2 tests for new features. [Result in my browser: __/7 on ____]
+7. WhatsApp export formats (Android and iPhone lines, multi-line messages,
+   system lines, original format unchanged)
+
+   That makes 5 core edge cases + 2 tests for later features = 7 groups.
+   Result in my browser: [FILL IN: __/7, browser name]
 Known limits: WhatsApp mentions written as plain names (no @) are not detected; day/month order in dates is not interpreted; Slack and Discord are not supported.
 
 **Results:**
@@ -256,7 +300,7 @@ Known limits: WhatsApp mentions written as plain names (no @) are not detected; 
 - Message numbers for the last-read field are only visible after a first
   analysis.
 - Opening `index.html` directly from disk may be affected by the strict CSP in
-  some browsers; running it with a local server (VS Code "Go Live") avoids this.
+  some browsers; running it with `node server.js` or VS Code "Go Live" avoids this.
 
 ## 7. Final Summary
 
@@ -272,7 +316,8 @@ Known limits: WhatsApp mentions written as plain names (no @) are not detected; 
   repo, and committed and pushed the work.
 - **Completed features:** parser, rule-based extraction, priority scoring with
   reasons, source links, filters, local .txt import, clear button, local-first
-  CSP, last-read marker, 6 built-in edge-case tests, README with architecture
+  CSP, last-read marker, WhatsApp import, 7 built-in edge-case tests, optional
+  local server, CLI and Node tests, README with architecture
   diagram.
 - **Next improvement:** decision reversal ("Monday" then "actually Tuesday"
   shows only the latest), resolving simple relative dates, and an on-device
