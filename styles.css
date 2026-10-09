@@ -302,3 +302,7 @@ td {
     flex: 1 1 auto;
   }
 }
+
+.transcript li.read {
+  opacity: 0.6;
+}

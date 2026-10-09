@@ -9,7 +9,12 @@
   >
   <title>What Did I Miss?</title>
   <link rel="stylesheet" href="./styles.css">
-  <script src="./app.js" defer></script>
+  <script src="./utils.js" defer></script>
+  <script src="./parser.js" defer></script>
+  <script src="./extract.js" defer></script>
+  <script src="./score.js" defer></script>
+  <script src="./tests.js" defer></script>
+  <script src="./ui.js" defer></script>
 </head>
 <body>
   <main>
@@ -37,6 +42,15 @@
       </div>
 
 <p id="date-help" class="muted"></p>
+
+<label>
+        Last message you read (optional number)
+        <input id="last-read" type="number" min="0" step="1" inputmode="numeric" placeholder="Empty or 0 = analyze everything">
+      </label>
+      <p class="muted">
+        Messages up to this number count as already read and are skipped.
+        Message numbers are listed under "View exact source messages".
+      </p>
 
 <label for="conversation">Paste conversation</label>
       <textarea
@@ -101,13 +115,13 @@
     </section>
 
 <section class="panel">
-      <h2>Five edge-case tests</h2>
+      <h2>Edge-case tests</h2>
       <p class="muted">
         These tests use fictional fixtures and the same extraction functions
         as the app. They never change your conversation.
       </p>
       <button id="run-tests" type="button" class="secondary">
-        Run 5 edge-case tests
+        Run edge-case tests (5 core + 1)
       </button>
       <p id="test-status" role="status" aria-live="polite"></p>
 
