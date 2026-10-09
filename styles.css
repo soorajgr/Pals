@@ -1,0 +1,308 @@
+:root {
+  color-scheme: light;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #142638;
+  background: #f2f6f8;
+  line-height: 1.55;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 36px 20px 70px;
+}
+
+header {
+  margin-bottom: 28px;
+}
+
+h1 {
+  margin: 12px 0 4px;
+  font-size: clamp(2rem, 5vw, 3.3rem);
+  letter-spacing: -0.055em;
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 1.3rem;
+}
+
+h3 {
+  margin-bottom: 6px;
+}
+
+.subtitle,
+.muted {
+  color: #596b7a;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 7px;
+  background: #d9f3eb;
+  color: #076854;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+}
+
+.panel {
+  margin: 20px 0;
+  padding: 25px;
+  border: 1px solid #dce5eb;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 5px 20px #14263805;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+input:not([type="file"]),
+textarea,
+select {
+  width: 100%;
+  margin-top: 6px;
+  padding: 11px 12px;
+  border: 1px solid #bac9d4;
+  border-radius: 8px;
+  background: white;
+  color: #142638;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 210px;
+}
+
+button {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 11px 15px;
+  background: #087b68;
+  color: white;
+  cursor: pointer;
+  font-weight: 650;
+}
+
+button:hover {
+  filter: brightness(0.94);
+}
+
+button.secondary {
+  color: #234356;
+  background: #edf3f7;
+  border-color: #d8e3eb;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+a:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #e4a62d;
+  outline-offset: 3px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+.file-label {
+  flex: 1 1 220px;
+}
+
+input[type="file"] {
+  display: block;
+  max-width: 100%;
+  margin-top: 5px;
+  font-size: 0.8rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.stat {
+  padding: 14px;
+  background: #f1f6f8;
+  border-radius: 10px;
+}
+
+.stat strong {
+  display: block;
+  font-size: 1.7rem;
+}
+
+.stat span {
+  font-size: 0.85rem;
+  color: #526878;
+}
+
+.items {
+  display: grid;
+  gap: 13px;
+  margin: 20px 0;
+}
+
+.item {
+  padding: 18px;
+  border: 1px solid #dce5eb;
+  border-left: 4px solid #89a1b3;
+  border-radius: 9px;
+}
+
+.item.high {
+  border-left-color: #bf4141;
+}
+
+.item.medium {
+  border-left-color: #c08720;
+}
+
+.item.low {
+  border-left-color: #428778;
+}
+
+.item h3 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+.item p {
+  margin: 7px 0;
+  font-size: 0.9rem;
+}
+
+blockquote {
+  margin: 12px 0;
+  padding: 10px 13px;
+  background: #f5f8fa;
+  border-radius: 6px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+a {
+  color: #087b68;
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.transcript {
+  padding-left: 25px;
+}
+
+.transcript li {
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  background: #f4f7f9;
+  scroll-margin-top: 20px;
+}
+
+.transcript li:target {
+  outline: 3px solid #e4a62d;
+}
+
+pre {
+  font-family: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 7px 0;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  padding: 12px 10px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid #dce5eb;
+}
+
+.pass {
+  color: #076854;
+  font-weight: 800;
+}
+
+.fail {
+  color: #a92626;
+  font-weight: 800;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 620px) {
+  main {
+    padding: 20px 12px 40px;
+  }
+
+.panel {
+    padding: 18px;
+  }
+
+.fields {
+    grid-template-columns: 1fr;
+  }
+
+.stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+.toolbar button {
+    flex: 1 1 auto;
+  }
+}
+
+.transcript li.read {
+  opacity: 0.6;
+}
