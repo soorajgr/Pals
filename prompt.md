@@ -3,7 +3,8 @@
 **Project:** What Did I Miss? (ProtocolX challenge: "The Unread Problem")
 **Event date:** 9 October 2026
 **Repo:** https://github.com/soorajgr/What_Did_I_Miss
-**AI tools used:** Claude (planning, code review, debugging help); 
+**AI tools used:** Claude (planning, code review, debugging, refactoring help); [FILL IN: tool used for the build prompt, e.g. Claude / ChatGPT / Gemini]
+
 > Honesty note: this log lists only interactions that actually happened.
 > Nothing here was invented after the fact. No API keys, passwords or other
 > secrets are used or stored in this project.
@@ -18,7 +19,8 @@
   (or imports a local .txt file), enters their name, and the app extracts and
   ranks decisions, proposals, tasks, mentions and deadlines. Every item shows
   the original quote, a plain-language explanation, a "why highlighted" list,
-  and a link to the exact source message.
+  and a link to the exact source message. The user can also enter the number
+  of the last message they read, and only the unread part is analyzed.
 - **Key features:**
   - Rule-based extraction of Decision, Proposal, Task, Mention, Deadline and
     Review (sarcasm) items
@@ -27,19 +29,27 @@
   - Task owner detection (explicit only; otherwise "Unassigned")
   - Deadline handling that preserves the original wording and never guesses
     relative dates or time zones
+  - "Last message you read" field: skips already-read messages and greys them
+    out in the source list
   - Filters by category and priority
   - Source message list with links from each item back to its message
   - Fictional demo data, a "Clear everything" button, local .txt import
-  - Built-in "Run 5 edge-case tests" panel
+  - Built-in edge-case test panel (5 core tests + 1 for the last-read feature)
   - Privacy: no backend, no network requests, no storage
 
 ## 2. Tech Stack & Architecture
 
 - **Stack:** Plain HTML, CSS and JavaScript. No frameworks, no dependencies,
-  no build step. Files: `index.html`, `app.js`, `styles.css`.
+  no build step.
+- **Files:** `index.html`, `styles.css`, and six plain scripts loaded in this
+  order: `utils.js` (helpers, limits), `parser.js` (message parsing, last-read
+  validation), `extract.js` (rule-based extraction), `score.js` (priority
+  scoring), `tests.js` (edge-case tests), `ui.js` (rendering, state, events).
+  (The first version was a single `app.js`; see Entry 5.)
 - **Pipeline:**
-  Local input -> message parser -> rule-based extraction -> priority scoring
-  -> results linked to source messages.
+  Local input -> message parser -> (optional) skip already-read messages ->
+  rule-based extraction -> transparent priority scoring -> results linked to
+  source messages.
 - **Why rules instead of a cloud AI model:** rules run offline, are fast, keep
   data on the device, and can explain every result. The app does not use a
   language model.
@@ -76,7 +86,7 @@
   (parser, detectors, scorer, summarizer, UI), a CSP to block network access,
   and 5 candidate edge cases. This was a plan only, not code.
 
-### Entry 3: Build prompt (the only prompt used to generate the app)
+### Entry 3: Build prompt (the prompt used to generate the first version of the app)
 - **Prompt:** (pasted exactly as sent)
 
   > Challenge:
@@ -125,23 +135,50 @@
   > messages. A compact language model running entirely on-device could
   > improve interpretation without requiring conversation uploads.
 
-  (The word "neve" is cut off in the original text I pasted; it is kept as
-  sent.)
+  (The word "neve" is cut off in the text I pasted; it is kept as sent.)
 - **Tool/model:** [FILL IN: the AI tool you sent this prompt to]
-- **Purpose:** Generate the complete app, including parser, extraction,
-  scoring, UI and the five built-in edge-case tests.
-- **Files affected:** `index.html`, `app.js`, `styles.css`
+- **Purpose:** Generate the first version of the app, including parser,
+  extraction, scoring, UI and the five built-in edge-case tests.
+- **Files affected:** `index.html`, `app.js`, `styles.css` (first version)
 - **Outcome/verification:** App generated. It was later checked by running
   its built-in tests and demo (see sections 4 and 6).
 
+### Entry 4: Improvement round after the Round 1 result
+- **Prompt:** After seeing my Round 1 score breakdown (Backend & Architecture
+  60, Code Standards 75, Innovation 80, UI/UX 80, Security 85), I asked Claude
+  how to improve. Claude proposed two low-risk changes: split the code into
+  separate files, and add an "unread since here" selector. I replied "go".
+- **Tool/model:** Claude
+- **Purpose:** Raise the architecture and code-quality scores and add a
+  feature that matches the "What Did I Miss?" idea.
+- **Files affected:** `app.js` (removed) split into `utils.js`, `parser.js`,
+  `extract.js`, `score.js`, `tests.js`, `ui.js`; plus `index.html`,
+  `styles.css`, `README.md`
+- **Outcome/verification:** In Claude's simulated browser (jsdom) all 6 test
+  groups passed and the last-read feature worked through the real buttons
+  (valid numbers, 0, empty, negative, too large, all messages read, Clear).
+  [FILL IN: "Confirmed in my own browser" with browser name, only if true]
+
 ## 4. Debugging
+
+### Entry 5: Code split (behavior-preserving)
+- **Change:** `app.js` was split into six plain script files. The split was
+  checked on its own first (5/5 tests, same demo output) before the new
+  feature was added, so any later failure could be traced to the feature and
+  not to the split.
+- **Tool/model:** Claude
+- **Files affected:** `utils.js`, `parser.js`, `extract.js`, `score.js`,
+  `tests.js`, `ui.js`, `index.html` (script tags)
+- **Outcome/verification:** Same results before and after the split in the
+  simulated browser.
 
 ### Bug: "Decision:" messages were never detected
 - **Prompt:** I uploaded `index.html`, `app.js` and `styles.css` to Claude and
   said "this is my app", which asked for a review.
 - **Tool/model:** Claude
 - **Purpose:** Review the finished app and run its tests.
-- **Files affected:** `app.js` (the `decisionSignal` regular expression)
+- **Files affected:** `app.js` (later `extract.js`): the `decisionSignal`
+  regular expression
 - **Problem found:** Claude ran the app's own tests in a simulated browser
   (jsdom, not a real browser). Test 1 failed ("Explicit decision was
   missed"), giving 4/5. The demo reported 0 decisions even though it contains
@@ -167,6 +204,8 @@
   - Uncertainty is shown, not hidden: confidence labels, "Unassigned" owners,
     "needs clarification" deadlines, and a Review category for sarcasm
   - Provenance: every item links back to the exact source message
+  - Unread focus: the last-read field analyzes only what came after, while
+    message numbers stay stable so source links still match
   - Accessible, simple UI: labelled inputs, status messages with `aria-live`,
     visible focus outlines, responsive layout
 - **Future AI feature (not built):** a compact on-device language model for
@@ -174,19 +213,24 @@
 
 ## 6. Testing & Improvements
 
-**Built-in edge-case tests** (button: "Run 5 edge-case tests"):
+**Built-in edge-case tests** (button: "Run edge-case tests (5 core + 1)"):
 
 1. Proposal vs. decision and negation
 2. Explicit sarcasm (`/s`)
 3. Ambiguous deadline (no invented date or time zone)
 4. Missing vs. explicit task ownership
 5. Hostile markup, blank input and unsafe mention matching
+6. Last-read marker: only messages after the last-read point are analyzed;
+   empty means 0; negative, non-numeric and too-large values are rejected;
+   nothing remains when every message is read
 
 **Results:**
 - Before the regex fix: 4/5 passed (test 1 failed).
 - After the regex fix: 5/5 passed, confirmed in my own browser. [FILL IN:
   browser name and time]
-- Fictional demo: confirmed it now detects the decision. [Tick only if you
+- After the code split and last-read feature: 6/6 passed in the simulated
+  browser. [FILL IN: "6/6 passed in my browser: ____ on ____" only if true]
+- Fictional demo: confirmed it detects the decision. [Keep only if you
   checked this yourself.]
 
 **Not tested:**
@@ -199,22 +243,27 @@
 - Relative dates ("tomorrow"), numeric dates ("03/04") and time zones are
   preserved but not resolved.
 - An old deadline does not prove a task is still open.
+- Message numbers for the last-read field are only visible after a first
+  analysis.
 - Opening `index.html` directly from disk may be affected by the strict CSP in
   some browsers; running it with a local server (VS Code "Go Live") avoids this.
 
 ## 7. Final Summary
 
-- **AI tools used:** Claude (planning, review, debugging help);
+- **AI tools used:** Claude (planning, review, debugging, refactoring help);
   [FILL IN: the tool used for the build prompt]
 - **Major contributions from AI:**
   - Planning and architecture choice (rule-based, local-first)
-  - Generated app code from one build prompt
+  - Generated the first version of the app code from one build prompt
   - Code review that found and fixed the decision-detection bug
+  - Behavior-preserving split into modules and the last-read feature
 - **My own contributions:** chose the project direction, wrote the build
-  prompt, ran the tests in my browser, applied the fix, set up the GitHub repo,
-  and committed and pushed the work.
+  prompt, ran the tests in my browser, applied the fixes, set up the GitHub
+  repo, and committed and pushed the work.
 - **Completed features:** parser, rule-based extraction, priority scoring with
   reasons, source links, filters, local .txt import, clear button, local-first
-  CSP, 5 built-in edge-case tests, README.
-- **Next improvement:** on-device language model for context-aware extraction
-  with confidence levels, plus importers for chat exports.
+  CSP, last-read marker, 6 built-in edge-case tests, README with architecture
+  diagram.
+- **Next improvement:** decision reversal ("Monday" then "actually Tuesday"
+  shows only the latest), resolving simple relative dates, and an on-device
+  language model for context-aware extraction.
