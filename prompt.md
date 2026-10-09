@@ -3,7 +3,7 @@
 **Project:** What Did I Miss? (ProtocolX challenge: "The Unread Problem")
 **Event date:** 9 October 2026
 **Repo:** https://github.com/soorajgr/Pals
-**AI tools used:** Claude (planning, code review, debugging, refactoring help); [FILL IN: tool used for the build prompt, e.g. Claude]
+**AI tools used:** Claude (planning, code review, debugging, refactoring help); 
 
 > Honesty note: this log lists only interactions that actually happened.
 > Nothing here was invented after the fact. No API keys, passwords or other
@@ -136,7 +136,7 @@
   > improve interpretation without requiring conversation uploads.
 
   (The word "neve" is cut off in the text I pasted; it is kept as sent.)
-- **Tool/model:** [FILL IN: the AI tool you sent this prompt to claude]
+- **Tool/model:**  the AI tool you sent this prompt to claude]
 - **Purpose:** Generate the first version of the app, including parser,
   extraction, scoring, UI and the five built-in edge-case tests.
 - **Files affected:** `index.html`, `app.js`, `styles.css` (first version)
@@ -157,7 +157,7 @@
 - **Outcome/verification:** In Claude's simulated browser (jsdom) all 6 test
   groups passed and the last-read feature worked through the real buttons
   (valid numbers, 0, empty, negative, too large, all messages read, Clear).
-  [FILL IN: "Confirmed in my own browser" Brave, only if true]
+  ["Confirmed in my own browser" Brave, only if true]
   
 
 ## 4. Debugging
@@ -193,7 +193,7 @@
   - After: `\bdecision\s*:|\b(?:we decided|...|finalized)\b|\bagreed\s*[:,]`
 - **Outcome/verification:** In Claude's simulated run the result went from 4/5
   to 5/5, and the demo then showed 1 decision. I then ran the built-in tests
-  in my own browser and all 5 passed. [FILL IN: Brave]
+  in my own browser and all 5 passed.  Brave
 
 ### Entry 6: WhatsApp export support
 - **Prompt:** After Claude gave a harsh critique of my score, one weakness was
@@ -208,8 +208,8 @@
   groups passed. Claude also ran a messy sample (system lines, multi-line
   messages, media lines, emoji, Android and iPhone variants, 24-hour time).
   Removing the WhatsApp detection made test 7 fail, so the test does check the
-  feature. Confirmed in my own browser: [FILL IN: yes]. Tested with a real
-  export from my own chat: [FILL IN: no].
+  feature. Confirmed in my own browser: [ yes]. Tested with a real
+  export from my own chat:  no.
 
 ### Entry 7: Round 2 result, deadline fix and optional local backend
 - **Prompt:** After my second result (84.90/100, rank #10 of 20; Backend &
@@ -239,7 +239,7 @@
   repeated 3 times, all passing. In a simulated browser (not a real
   one) the 7 in-page tests passed; analysis matched in page and server modes;
   the page fell back to local analysis when the server was down; Clear during
-  a request was not undone. Confirmed in my own real browser: [FILL IN:
+  a request was not undone. Confirmed in my own real browser: [
   yes,Brave].
 
 ## 5. AI Features & Design
@@ -275,15 +275,15 @@
    system lines, original format unchanged)
 
    That makes 5 core edge cases + 2 tests for later features = 7 groups.
-   Result in my browser: [FILL IN: _7/7,Brave]
+   Result in my browser: [ _7/7,Brave]
 Known limits: WhatsApp mentions written as plain names (no @) are not detected; day/month order in dates is not interpreted; Slack and Discord are not supported.
 
 **Results:**
 - Before the regex fix: 4/5 passed (test 1 failed).
-- After the regex fix: 5/5 passed, confirmed in my own browser. [FILL IN:
+- After the regex fix: 5/5 passed, confirmed in my own browser. [
   Brave]
 - After the code split and last-read feature: 6/6 passed in the simulated
-  browser. [FILL IN: "6/6 passed in my browser: Brave on ____" only if true]
+  browser. [ "6/6 passed in my browser: Brave on ____" only if true]
 - Fictional demo: confirmed it detects the decision. [Keep only if you
   checked this yourself.]
 
@@ -305,7 +305,7 @@ Known limits: WhatsApp mentions written as plain names (no @) are not detected; 
 ## 7. Final Summary
 
 - **AI tools used:** Claude (planning, review, debugging, refactoring help);
-  [FILL IN: the tool used for the build prompt claude]
+   the tool used for the build prompt claude
 - **Major contributions from AI:**
   - Planning and architecture choice (rule-based, local-first)
   - Generated the first version of the app code from one build prompt
