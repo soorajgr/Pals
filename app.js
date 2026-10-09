@@ -304,7 +304,7 @@ const proposal =
 const conditional = /\b(?:if|unless|provided that)\b/i.test(text);
 
 const decisionSignal =
-      /\b(?:decision\s*:|we decided|we agreed|it is decided|approved|confirmed|finalized)\b|\bagreed\s*[:,]/i.test(
+      /\bdecision\s*:|\b(?:we decided|we agreed|it is decided|approved|confirmed|finalized)\b|\bagreed\s*[:,]/i.test(
         text
       );
 
