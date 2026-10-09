@@ -43,9 +43,20 @@ if (!dateLike.test(phrase)) {
     return null;
   }
 
-const simpleISO = phrase.match(/^(\d{4}-\d{2}-\d{2})$/);
+/*
+ * An ISO date normalizes when it is the whole phrase, or when only plain
+ * words follow it after a comma ("2026-10-12, will share in the group").
+ * A trailing digit, "at", or date/time word ("2026-10-12, 5pm",
+ * "2026-10-12, at 5") keeps it unresolved.
+ */
+  const leadingISO = phrase.match(/^(\d{4}-\d{2}-\d{2})(?:$|,\s*(.*)$)/);
+  const trailing = leadingISO && leadingISO[2] ? leadingISO[2] : "";
+  const trailingIsPlain =
+    !/\d|\bat\b/i.test(trailing) && !dateLike.test(trailing);
   const normalized =
-    simpleISO && validISODate(simpleISO[1]) ? simpleISO[1] : null;
+    leadingISO && trailingIsPlain && validISODate(leadingISO[1])
+      ? leadingISO[1]
+      : null;
 
 return {
     literal: match[0],

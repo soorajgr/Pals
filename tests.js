@@ -108,6 +108,20 @@ assert(
           item.deadline.literal.includes("03/04, tomorrow at 5 CST"),
           "Original deadline wording was lost."
         );
+
+const plainTail = extract(
+          "Leo: I will send it by 2026-10-12, will share in the group."
+        ).find((result) => result.category === "Deadline");
+
+const timedTail = extract(
+          "Leo: I will send it by 2026-10-12, 5pm."
+        ).find((result) => result.category === "Deadline");
+
+assert(
+          plainTail?.deadline.normalized === "2026-10-12" &&
+            timedTail?.deadline.normalized === null,
+          "ISO date followed by words/time was handled incorrectly."
+        );
       }
     },
     {

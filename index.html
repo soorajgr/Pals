@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta
     http-equiv="Content-Security-Policy"
-    content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
   >
   <title>What Did I Miss?</title>
   <link rel="stylesheet" href="./styles.css">
@@ -50,6 +50,17 @@
       <p class="muted">
         Messages up to this number count as already read and are skipped.
         Message numbers are listed under "View exact source messages".
+      </p>
+
+<label class="check">
+        <input id="use-server" type="checkbox">
+        Use local server (optional)
+      </label>
+      <p id="server-help" class="muted">
+        Off by default: analysis runs in this page. If you started
+        <code>node server.js</code> and opened http://127.0.0.1:3000, you can
+        send the text to that program on your own computer instead. It is
+        never sent anywhere else.
       </p>
 
 <label for="conversation">Paste conversation</label>
@@ -147,6 +158,8 @@
         <p>
           Local input → message parser → rule-based extraction →
           transparent priority scoring → results linked to source messages.
+          The same parser, extraction and scoring scripts run in the browser,
+          in the optional local server, and in the command-line tool.
         </p>
 
 <h3>Why rules instead of a cloud model?</h3>
@@ -158,9 +171,12 @@
 
 <h3>Privacy</h3>
         <p>
-          No network requests, backend, analytics, browser storage, or
-          conversation exports. Input and results live in page memory.
-          Clear removes app-held input and results; it is not a secure
+          By default there are no network requests, analytics, browser
+          storage, or conversation exports: input and results live in page
+          memory. An optional local server (<code>node server.js</code>) can
+          do the same analysis; it listens on 127.0.0.1 only, the page may
+          connect to its own origin only, and it never logs or stores chat
+          text. Clear removes app-held input and results; it is not a secure
           forensic memory wipe. Browser extensions, operating-system
           behavior, and hosting software are outside this app's control.
         </p>
