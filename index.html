@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+  >
+  <title>What Did I Miss?</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <span class="badge">LOCAL-FIRST · NO CLOUD</span>
+      <h1>What Did I Miss?</h1>
+      <p class="subtitle">
+        Find decisions, tasks, mentions, and deadlines without uploading your chats.
+      </p>
+    </header>
+
+<section class="panel" aria-labelledby="input-heading">
+      <h2 id="input-heading">Your unread conversation</h2>
+
+<div class="fields">
+        <label>
+          Your name or handle
+          <input id="username" placeholder="For example: Asha" maxlength="80">
+        </label>
+
+<label>
+          Analysis date
+          <input id="reference-date" type="date">
+        </label>
+      </div>
+
+<p id="date-help" class="muted"></p>
+
+<label for="conversation">Paste conversation</label>
+      <textarea
+        id="conversation"
+        rows="11"
+        spellcheck="false"
+        placeholder="[2026-10-09 09:00] Maya: Decision: use the smaller launch scope.
+[2026-10-09 09:05] Sam: I will prepare the release notes.
+[2026-10-09 09:10] Maya: @Asha please review the notes by 2026-10-12."
+      ></textarea>
+
+<div class="toolbar">
+        <button id="analyze" type="button">Analyze locally</button>
+        <button id="demo" type="button" class="secondary">Load fictional demo</button>
+        <button id="clear" type="button" class="secondary">Clear everything</button>
+
+<label class="file-label">
+          Import local .txt
+          <input id="file" type="file" accept=".txt,text/plain">
+        </label>
+      </div>
+
+<p id="status" role="status" aria-live="polite"></p>
+    </section>
+
+<section id="results" class="panel" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading">Your catch-up</h2>
+      <div id="stats" class="stats"></div>
+      <p id="summary"></p>
+
+<div class="fields">
+        <label>
+          Category
+          <select id="category">
+            <option value="all">All categories</option>
+            <option>Decision</option>
+            <option>Proposal</option>
+            <option>Task</option>
+            <option>Mention</option>
+            <option>Deadline</option>
+            <option>Review</option>
+          </select>
+        </label>
+
+<label>
+          Priority
+          <select id="priority">
+            <option value="all">All priorities</option>
+            <option>High</option>
+            <option>Medium</option>
+            <option>Low</option>
+          </select>
+        </label>
+      </div>
+
+<div id="items" class="items"></div>
+
+<details>
+        <summary>View exact source messages</summary>
+        <ol id="transcript" class="transcript"></ol>
+      </details>
+    </section>
+
+<section class="panel">
+      <h2>Five edge-case tests</h2>
+      <p class="muted">
+        These tests use fictional fixtures and the same extraction functions
+        as the app. They never change your conversation.
+      </p>
+      <button id="run-tests" type="button" class="secondary">
+        Run 5 edge-case tests
+      </button>
+      <p id="test-status" role="status" aria-live="polite"></p>
+
+<div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Test</th>
+              <th scope="col">Result</th>
+              <th scope="col">Checks</th>
+            </tr>
+          </thead>
+          <tbody id="test-results"></tbody>
+        </table>
+      </div>
+    </section>
+
+<section class="panel">
+      <details>
+        <summary>Architecture, privacy, and limitations</summary>
+
+<h3>Architecture</h3>
+        <p>
+          Local input → message parser → rule-based extraction →
+          transparent priority scoring → results linked to source messages.
+        </p>
+
+<h3>Why rules instead of a cloud model?</h3>
+        <p>
+          Rules run offline, are lightweight, and can explain each result.
+          This app does not use a language model. Confidence labels describe
+          rule strength, not calibrated probabilities.
+        </p>
+
+<h3>Privacy</h3>
+        <p>
+          No network requests, backend, analytics, browser storage, or
+          conversation exports. Input and results live in page memory.
+          Clear removes app-held input and results; it is not a secure
+          forensic memory wipe. Browser extensions, operating-system
+          behavior, and hosting software are outside this app's control.
+        </p>
+
+<h3>Supported message format</h3>
+        <p>
+          Use “[YYYY-MM-DD HH:mm] Name: message” or “Name: message”.
+          Indented lines continue the preceding message. Other lines become
+          separate messages with an unknown author. This is not a native
+          Slack, WhatsApp, or Discord export parser.
+        </p>
+
+<h3>Limitations</h3>
+        <p>
+          Indirect decisions, mixed statements, sarcasm without an explicit
+          marker, and implicit task ownership may be missed.
+          Relative dates, numeric ambiguous dates, and timezone-specific
+          deadlines are preserved but not resolved. ISO dates are compared
+          as calendar dates, not exact instants. An old deadline is not proof
+          that a task is still open.
+        </p>
+
+<h3>Next improvement</h3>
+        <p>
+          Add a compact on-device model for context-aware extraction while
+          preserving source quotes, uncertainty labels, and offline processing.
+        </p>
+      </details>
+    </section>
+  </main>
+</body>
+</html>
