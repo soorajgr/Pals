@@ -241,6 +241,68 @@ assert(
           "Items remained after every message was read."
         );
       }
+    },
+    {
+      name: "7. WhatsApp export formats",
+      checks: "Android and iPhone lines parse; multi-line messages join; system lines are skipped; other formats are unchanged.",
+      run() {
+        const android =
+          "09/10/26, 10:30 am - Maya: Decision: ship Friday.\n" +
+          "09/10/26, 10:31 am - Sam: I will write the notes\n" +
+          "by 2026-10-12.\n" +
+          "09/10/26, 10:32 am - Messages and calls are end-to-end encrypted.";
+
+        const ios =
+          "\u200e[09/10/2026, 10:30:15\u202fPM] Maya: @Asha please review by 2026-10-10.";
+
+        const msgs = parseMessages(android);
+
+        assert(msgs.length === 3, "Android export was not split into 3 messages.");
+        assert(
+          msgs[0].author === "Maya" && msgs[0].timestamp === "09/10/26, 10:30 am",
+          "Android author or as-supplied timestamp was wrong."
+        );
+        assert(
+          msgs[1].text.includes("\nby 2026-10-12."),
+          "A continuation line was not joined to its message."
+        );
+        assert(msgs[2].system === true, "System line was not marked.");
+
+        const items = analyzeMessages(msgs, options);
+
+        assert(
+          items.some((i) => i.sourceId === "message-1" && i.category === "Decision"),
+          "Decision inside a WhatsApp line was missed."
+        );
+        assert(
+          items.some(
+            (i) => i.sourceId === "message-2" && i.deadline?.normalized === "2026-10-12"
+          ),
+          "Deadline in a continuation line was missed."
+        );
+        assert(
+          !items.some((i) => i.sourceId === "message-3"),
+          "A system line produced an item."
+        );
+
+        const iosMessages = parseMessages(ios);
+
+        assert(
+          iosMessages.length === 1 && iosMessages[0].author === "Maya",
+          "iPhone-style line was not parsed."
+        );
+        assert(
+          analyzeMessages(iosMessages, options).some((i) => i.category === "Mention"),
+          "Mention in an iPhone-style line was missed."
+        );
+
+        const plain = parseMessages("[2026-10-09 09:00] Maya: Hi\nSam: Hello");
+
+        assert(
+          plain.length === 2 && plain[0].timestamp === "2026-10-09 09:00",
+          "The original format changed behavior."
+        );
+      }
     }
   ];
 

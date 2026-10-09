@@ -74,6 +74,11 @@ function analyzeMessages(messages, options) {
   const items = [];
 
 for (const message of messages) {
+    // WhatsApp system lines (encryption notice, joins) are not conversation.
+    if (message.system) {
+      continue;
+    }
+
     const text = message.text;
 
 const sarcasm = /\/s(?:\s|$)|\[sarcasm\]/i.test(text);

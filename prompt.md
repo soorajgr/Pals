@@ -158,6 +158,7 @@
   groups passed and the last-read feature worked through the real buttons
   (valid numbers, 0, empty, negative, too large, all messages read, Clear).
   [FILL IN: "Confirmed in my own browser" with browser name, only if true]
+  
 
 ## 4. Debugging
 
@@ -194,6 +195,13 @@
   to 5/5, and the demo then showed 1 decision. I then ran the built-in tests
   in my own browser and all 5 passed. [FILL IN: browser name]
 
+Entry 6 : WhatsApp export support
+Prompt: After Claude gave a harsh critique of my score, one weakness was that real chats don't match my input format. I replied "yes" to Claude's offer to build a WhatsApp export parser.
+Tool/model: Claude
+Purpose: Let users paste or import a real WhatsApp text export (Android and iPhone) instead of only my custom format.
+Files affected: parser.js, extract.js, ui.js, tests.js, index.html, README.md, whatsapp-sample.txt
+Outcome/verification: In Claude's simulated browser (jsdom) all 7 test groups passed. Claude also ran a messy sample (system lines, multi-line messages, media lines, emoji, an Android and an iPhone variant, 24-hour time). Removing the WhatsApp detection made test 7 fail, so the test does check the feature. [Confirmed in my own browser: YES/NO. Tested with a real export from my own chat: YES/NO]
+
 ## 5. AI Features & Design
 
 - **No AI model runs inside the app.** Analysis is deterministic rules, chosen
@@ -223,6 +231,8 @@
 6. Last-read marker: only messages after the last-read point are analyzed;
    empty means 0; negative, non-numeric and too-large values are rejected;
    nothing remains when every message is read
+7. WhatsApp export formats. Now 5 core edge cases + 2 tests for new features. [Result in my browser: __/7 on ____]
+Known limits: WhatsApp mentions written as plain names (no @) are not detected; day/month order in dates is not interpreted; Slack and Discord are not supported.
 
 **Results:**
 - Before the regex fix: 4/5 passed (test 1 failed).

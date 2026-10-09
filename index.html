@@ -121,7 +121,7 @@
         as the app. They never change your conversation.
       </p>
       <button id="run-tests" type="button" class="secondary">
-        Run edge-case tests (5 core + 1)
+        Run edge-case tests (5 core + 2)
       </button>
       <p id="test-status" role="status" aria-live="polite"></p>
 
@@ -167,10 +167,13 @@
 
 <h3>Supported message format</h3>
         <p>
-          Use “[YYYY-MM-DD HH:mm] Name: message” or “Name: message”.
-          Indented lines continue the preceding message. Other lines become
-          separate messages with an unknown author. This is not a native
-          Slack, WhatsApp, or Discord export parser.
+          Use “[YYYY-MM-DD HH:mm] Name: message”, “Name: message”, or a WhatsApp
+          text export (Android “09/10/26, 10:30 am - Name: message” and iPhone
+          “[09/10/2026, 10:30:15 AM] Name: message”). In WhatsApp exports, lines
+          without a timestamp continue the previous message and system lines are
+          skipped. In the other format, indented lines continue the preceding
+          message and other lines become separate messages with an unknown
+          author. Slack and Discord exports are not supported.
         </p>
 
 <h3>Limitations</h3>

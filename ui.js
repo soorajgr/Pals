@@ -146,7 +146,7 @@ for (const [index, message] of state.messages.entries()) {
     }
 
 const metadata =
-      `${message.id} · ${message.author || "Unknown author"}` +
+      `${message.id} · ${message.system ? "System message" : message.author || "Unknown author"}` +
       (message.timestamp ? ` · ${message.timestamp} (as supplied)` : "") +
       (index < state.skipped ? " · already read" : "");
 
@@ -185,7 +185,7 @@ if (!input.trim()) {
 if (input.length > MAX_CHARACTERS) {
     invalidateResults();
     $("status").textContent =
-      `Please keep the conversation under ${MAX_CHARACTERS.toLocaleString()} characters.`;
+      `Please keep the conversation under ${MAX_CHARACTERS.toLocaleString()} characters. Paste only the recent part of the chat.`;
     return;
   }
 
@@ -266,7 +266,7 @@ if (version !== importVersion) {
 
 if (text.length > MAX_CHARACTERS) {
       $("status").textContent =
-        `File exceeds the ${MAX_CHARACTERS.toLocaleString()} character limit.`;
+        `File exceeds the ${MAX_CHARACTERS.toLocaleString()} character limit. Use only the recent part of the chat.`;
       return;
     }
 
